@@ -23,6 +23,41 @@
 #include "../ui/helper.h"
 #include <string.h>
 
+void UI_DisplayMICBar() {
+ char String[16];
+
+  const uint8_t LINE = 3;
+ // const uint8_t BAR_LEFT_MARGIN = 24;
+
+  uint8_t *line = gFrameBuffer[LINE];
+
+  memset(line, 0, 128);
+
+    uint8_t afDB = BK4819_ReadRegister(0x6F) & 0b1111111;
+    uint8_t afPX = ConvertDomain(afDB, 26, 194, 0, 121);
+    for (uint8_t i = 0; i < afPX; ++i) {
+       line[i] = line[i + 2] = 0b00111110;
+       //line[i + 1] = sv > 9 ? 0b00100010 : 0b00111110;
+      gFrameBuffer[3][i + LINE] |= 0b00000011;
+    }
+/*
+      for (int i = BAR_LEFT_MARGIN, sv = 1; i < BAR_LEFT_MARGIN + s * 4;
+       i += 4, sv++) {
+    line[i] = line[i + 2] = 0b00111110;
+    line[i + 1] = sv > 9 ? 0b00100010 : 0b00111110;
+  }
+*/
+  sprintf(String, "%d", dBm);
+  UI_PrintStringSmallest(String, 110, 25, false, true);
+  if (s < 10) {
+    sprintf(String, "a%u", s);
+  } else {
+    sprintf(String, "aa%u0", s - 9);
+  }
+  UI_PrintStringSmallest(String, 3, 25, false, true);
+  ST7565_BlitFullScreen();
+}
+
 void UI_DisplayRSSIBar(int16_t rssi) {
   char String[16];
 

@@ -19,6 +19,7 @@
 
 #include <stdint.h>
 void UI_DisplayRSSIBar(int16_t rssi);
+void UI_DisplayMICBar(void);
 
 #endif
 

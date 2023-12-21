@@ -109,8 +109,10 @@ static void displayVfo(uint8_t vfoNum) {
   } else if ((gCurrentFunction == FUNCTION_RECEIVE ||
               gCurrentFunction == FUNCTION_MONITOR) &&
              gEeprom.RX_VFO == vfoNum) {
+              
     UI_PrintStringSmallBold("RX", 0, 0, Line + 1);
   }
+  
 
   if (IS_MR_CHANNEL(screenCH)) {
     if (gInputBoxIndex == 0 || gEeprom.TX_VFO != vfoNum) {
@@ -225,9 +227,9 @@ void UI_DisplayMain(void) {
   if (gScreenToDisplay == DISPLAY_MAIN && !gKeypadLocked) {
     if (gCurrentFunction == FUNCTION_RECEIVE ||
         gCurrentFunction == FUNCTION_MONITOR ||
-        gCurrentFunction == FUNCTION_INCOMING || GPIO_CheckBit(&GPIOB->DATA, GPIOB_PIN_BACKLIGHT)) {
+        gCurrentFunction == FUNCTION_INCOMING /*|| GPIO_CheckBit(&GPIOB->DATA, GPIOB_PIN_BACKLIGHT)*/) {
             UI_DisplayRSSIBar(BK4819_GetRSSI());
-    }
+    } else if (gCurrentFunction == FUNCTION_TRANSMIT) { UI_DisplayMICBar(); }
 //always display?
   }
 
