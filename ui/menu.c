@@ -192,7 +192,6 @@ uint32_t gSubMenuSelection;
 
 void UI_DisplayMenu(void) {
   char String[16];
-  char Contact[16];
   uint8_t i;
 
   memset(gFrameBuffer, 0, sizeof(gFrameBuffer));

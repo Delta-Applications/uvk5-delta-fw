@@ -21,6 +21,8 @@
 #include "../bitmaps.h"
 #include "../driver/bk4819.h"
 #include "../driver/st7565.h"
+#include "driver/gpio.h"
+#include "bsp/dp32g030/gpio.h"
 #include "../external/printf/printf.h"
 #include "../frequencies.h"
 #include "../functions.h"
@@ -31,6 +33,7 @@
 #include "../ui/helper.h"
 #include "../ui/inputbox.h"
 #include "../ui/rssi.h"
+
 #include "../ui/ui.h"
 #include <string.h>
 
@@ -222,9 +225,10 @@ void UI_DisplayMain(void) {
   if (gScreenToDisplay == DISPLAY_MAIN && !gKeypadLocked) {
     if (gCurrentFunction == FUNCTION_RECEIVE ||
         gCurrentFunction == FUNCTION_MONITOR ||
-        gCurrentFunction == FUNCTION_INCOMING) {
-      UI_DisplayRSSIBar(BK4819_GetRSSI());
+        gCurrentFunction == FUNCTION_INCOMING || GPIO_CheckBit(&GPIOB->DATA, GPIOB_PIN_BACKLIGHT)) {
+            UI_DisplayRSSIBar(BK4819_GetRSSI());
     }
+//always display?
   }
 
   ST7565_BlitFullScreen();
