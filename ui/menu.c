@@ -391,17 +391,6 @@ void UI_DisplayMenu(void) {
     sprintf(String, "LIST%d", gSubMenuSelection);
     break;
 
-  case MENU_ANI_ID:
-    strcpy(String, gEeprom.ANI_DTMF_ID);
-    break;
-
-  case MENU_UPCODE:
-    strcpy(String, gEeprom.DTMF_UP_CODE);
-    break;
-
-  case MENU_DWCODE:
-    strcpy(String, gEeprom.DTMF_DOWN_CODE);
-    break;
 
   case MENU_D_RSP:
     strcpy(String, gSubMenu_D_RSP[gSubMenuSelection]);
@@ -417,17 +406,6 @@ void UI_DisplayMenu(void) {
 
   case MENU_PTT_ID:
     strcpy(String, gSubMenu_PTT_ID[gSubMenuSelection]);
-    break;
-
-  case MENU_D_LIST:
-    gIsDtmfContactValid =
-        DTMF_GetContact((uint8_t)gSubMenuSelection - 1, Contact);
-    if (!gIsDtmfContactValid) {
-      // Ghidra being weird again...
-      memcpy(String, "NULL\0\0\0", 8);
-    } else {
-      memcpy(String, Contact, 8);
-    }
     break;
 
   case MENU_PONMSG:
@@ -478,23 +456,6 @@ case MENU_BATTYP:
   if ((gMenuCursor == MENU_R_CTCS || gMenuCursor == MENU_R_DCS) &&
       gCssScanMode != CSS_SCAN_MODE_OFF) {
     UI_PrintString("SCAN", 50, 127, 4, 8, true);
-  }
-
-  if (gMenuCursor == MENU_UPCODE) {
-    if (strlen(gEeprom.DTMF_UP_CODE) > 8) {
-      UI_PrintString(gEeprom.DTMF_UP_CODE + 8, 50, 127, 4, 8, true);
-    }
-  }
-  if (gMenuCursor == MENU_DWCODE) {
-    if (strlen(gEeprom.DTMF_DOWN_CODE) > 8) {
-      UI_PrintString(gEeprom.DTMF_DOWN_CODE + 8, 50, 127, 4, 8, true);
-    }
-  }
-  if (gMenuCursor == MENU_D_LIST && gIsDtmfContactValid) {
-    Contact[11] = 0;
-    memcpy(&gDTMF_ID, Contact + 8, 4);
-    sprintf(String, "ID:%s", Contact + 8);
-    UI_PrintString(String, 50, 127, 4, 8, true);
   }
 
   if (gMenuCursor == MENU_R_CTCS || gMenuCursor == MENU_T_CTCS ||
