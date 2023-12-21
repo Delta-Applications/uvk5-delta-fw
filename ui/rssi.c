@@ -40,7 +40,7 @@ void UI_DisplayMICBar() {
     uint8_t afPX = ConvertDomain(afDB, 26, 194, 0, 121);
     for (uint8_t i = 0, sv = 1; i < afPX*2; i+=4, sv++) {
        line[i] = line[i + 2] = 0b00111110;
-       line[i + 1] = sv > 9 ? 0b00100010 : 0b00111110;
+       line[i + 1] = sv > 15 ? 0b00100010 : 0b00111110;
     }
 
   sprintf(String, "%d dB", afDB);
