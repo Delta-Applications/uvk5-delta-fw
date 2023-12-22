@@ -796,7 +796,7 @@ uint8_t BK4819_GetCTCType(void) {
 }
 
 
-__inline void rogerbeep(const uint16_t freq, const int delay)
+void rogerbeep(const uint16_t freq, const int delay)
 {
 	BK4819_WriteRegister(BK4819_REG_71, scale_freq(freq));
 	BK4819_ExitTxMute();
@@ -815,13 +815,10 @@ void BK4819_PlayRoger(int t)
 	SYSTEM_DelayMs(50);
   switch (t) {
     case 1:
-      tone1_Hz = 500;
-      tone2_Hz = 700;
       rogerbeep(500, 80);
       rogerbeep(700, 80);
+      break;
     case 2:
-      tone1_Hz = 1540;
-      tone2_Hz = 1310;
       rogerbeep(1540, 80);
       rogerbeep(1310, 80);
     break;
