@@ -64,57 +64,6 @@ static void displayVfoStatus(uint8_t vfoNum, bool isTx) {
   }
 }
 
-static void displayDtmf(uint8_t vfoNum) {
-  char String[16];
-  char Contact[16];
-
-  if (!gDTMF_InputMode) {
-    if (gDTMF_CallState == DTMF_CALL_STATE_CALL_OUT) {
-      if (gDTMF_State == DTMF_STATE_CALL_OUT_RSP) {
-        strcpy(String, "CALL OUT(RSP)");
-      } else {
-        strcpy(String, "CALL OUT");
-      }
-    } else if (gDTMF_CallState == DTMF_CALL_STATE_RECEIVED) {
-      if (DTMF_FindContact(gDTMF_Caller, Contact)) {
-        sprintf(String, "CALL:%s", Contact);
-      } else {
-        sprintf(String, "CALL:%s", gDTMF_Caller);
-      }
-    } else if (gDTMF_IsTx) {
-      if (gDTMF_State == DTMF_STATE_TX_SUCC) {
-        strcpy(String, "DTMF TX(SUCC)");
-      } else {
-        strcpy(String, "DTMF TX");
-      }
-    }
-  } else {
-    sprintf(String, ">%s", gDTMF_InputBox);
-  }
-  UI_PrintString(String, 2, 127, vfoNum * 3, 8, false);
-
-  memset(String, 0, sizeof(String));
-  memset(Contact, 0, sizeof(Contact));
-
-  if (!gDTMF_InputMode) {
-    if (gDTMF_CallState == DTMF_CALL_STATE_CALL_OUT) {
-      if (DTMF_FindContact(gDTMF_String, Contact)) {
-        sprintf(String, ">%s", Contact);
-      } else {
-        sprintf(String, ">%s", gDTMF_String);
-      }
-    } else if (gDTMF_CallState == DTMF_CALL_STATE_RECEIVED) {
-      if (DTMF_FindContact(gDTMF_Callee, Contact)) {
-        sprintf(String, ">%s", Contact);
-      } else {
-        sprintf(String, ">%s", gDTMF_Callee);
-      }
-    } else if (gDTMF_IsTx) {
-      sprintf(String, ">%s", gDTMF_String);
-    }
-  }
-  UI_PrintString(String, 2, 127, 2 + (vfoNum * 3), 8, false);
-}
 
 static void displayVfo(uint8_t vfoNum) {
   char String[16];
@@ -132,11 +81,6 @@ static void displayVfo(uint8_t vfoNum) {
   }
 
   if (Channel != vfoNum) {
-    if (gDTMF_CallState != DTMF_CALL_STATE_NONE || gDTMF_IsTx ||
-        gDTMF_InputMode) {
-      displayDtmf(vfoNum);
-      return;
-    }
 
     if (bIsSameVfo) {
       // Default

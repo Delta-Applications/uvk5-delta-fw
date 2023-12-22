@@ -23,9 +23,9 @@
 #include "../driver/uart.h"
 #include "../misc.h"
 
-static const uint16_t FSK_RogerTable[7] = {
+/*static const uint16_t FSK_RogerTable[7] = {
     0xF1A2, 0x7446, 0x61A4, 0x6544, 0x4E8A, 0xE044, 0xEA84,
-};
+};*/
 
 static uint16_t gBK4819_GpioOutState;
 
@@ -795,63 +795,47 @@ uint8_t BK4819_GetCTCType(void) {
   return (BK4819_ReadRegister(BK4819_REG_0C) >> 10) & 3;
 }
 
-void BK4819_PlayRoger(bool mt)
+
+__inline void rogerbeep(const uint16_t freq, const int delay)
 {
-	const uint32_t tone1_Hz = mt ? 1540 : 500;
-	const uint32_t tone2_Hz = mt ? 1310 : 700;
-	BK4819_EnterTxMute();
+	BK4819_WriteRegister(BK4819_REG_71, scale_freq(freq));
+	BK4819_ExitTxMute();
+	SYSTEM_DelayMs(delay);
+  BK4819_EnterTxMute();
+}
+
+
+void BK4819_PlayRoger(int t)
+{
+  BK4819_EnterTxMute();
 	BK4819_SetAF(BK4819_AF_MUTE);
-//	BK4819_WriteRegister(BK4819_REG_70, BK4819_REG_70_ENABLE_TONE1 | (96u << BK4819_REG_70_SHIFT_TONE1_TUNING_GAIN));
+  //	BK4819_WriteRegister(BK4819_REG_70, BK4819_REG_70_ENABLE_TONE1 | (96u << BK4819_REG_70_SHIFT_TONE1_TUNING_GAIN));
 	BK4819_WriteRegister(BK4819_REG_70, BK4819_REG_70_ENABLE_TONE1 | (28u << BK4819_REG_70_SHIFT_TONE1_TUNING_GAIN));
 	BK4819_EnableTXLink();
 	SYSTEM_DelayMs(50);
-	BK4819_WriteRegister(BK4819_REG_71, scale_freq(tone1_Hz));
-	BK4819_ExitTxMute();
-	SYSTEM_DelayMs(80);
-	BK4819_EnterTxMute();
-	BK4819_WriteRegister(BK4819_REG_71, scale_freq(tone2_Hz));
-	BK4819_ExitTxMute();
-	SYSTEM_DelayMs(80);
-	BK4819_EnterTxMute();
+  switch (t) {
+    case 1:
+      tone1_Hz = 500;
+      tone2_Hz = 700;
+      rogerbeep(500, 80);
+      rogerbeep(700, 80);
+    case 2:
+      tone1_Hz = 1540;
+      tone2_Hz = 1310;
+      rogerbeep(1540, 80);
+      rogerbeep(1310, 80);
+    break;
+    case 3: 
+      rogerbeep(910, 25);
+      rogerbeep(0, 25);
+      rogerbeep(910, 25);
+      rogerbeep(0, 25);
+      rogerbeep(910, 50);
+    break;
+  }
+
 	BK4819_WriteRegister(BK4819_REG_70, 0x0000);
 	BK4819_WriteRegister(BK4819_REG_30, 0xC1FE);   // 1 1 0000 0 1 1111 1 1 1 0
-}
-
-void BK4819_PlayRogerMDC(void) {
-  uint8_t i;
-
-  BK4819_SetAF(BK4819_AF_MUTE);
-  BK4819_WriteRegister(
-      BK4819_REG_58,
-      0x37C3); // FSK Enable, RX Bandwidth FFSK1200/1800, 0xAA or 0x55 Preamble,
-               // 11 RX Gain, 101 RX Mode, FFSK1200/1800 TX
-  BK4819_WriteRegister(BK4819_REG_72, 0x3065); // Set Tone2 to 1200Hz
-  BK4819_WriteRegister(BK4819_REG_70,
-                       0x00E0); // Enable Tone2 and Set Tone2 Gain
-  BK4819_WriteRegister(BK4819_REG_5D,
-                       0x0D00); // Set FSK data length to 13 bytes
-  BK4819_WriteRegister(
-      BK4819_REG_59,
-      0x8068); // 4 byte sync length, 6 byte preamble, clear TX FIFO
-  BK4819_WriteRegister(
-      BK4819_REG_59,
-      0x0068); // Same, but clear TX FIFO is now unset (clearing done)
-  BK4819_WriteRegister(BK4819_REG_5A, 0x5555); // First two sync bytes
-  BK4819_WriteRegister(BK4819_REG_5B,
-                       0x55AA); // End of sync bytes. Total 4 bytes: 555555aa
-  BK4819_WriteRegister(BK4819_REG_5C, 0xAA30); // Disable CRC
-  for (i = 0; i < 7; i++) {
-    BK4819_WriteRegister(
-        BK4819_REG_5F, FSK_RogerTable[i]); // Send the data from the roger table
-  }
-  SYSTEM_DelayMs(20);
-  BK4819_WriteRegister(BK4819_REG_59,
-                       0x0868); // 4 sync bytes, 6 byte preamble, Enable FSK TX
-  SYSTEM_DelayMs(180);
-  // Stop FSK TX, reset Tone2, disable FSK.
-  BK4819_WriteRegister(BK4819_REG_59, 0x0068);
-  BK4819_WriteRegister(BK4819_REG_70, 0x0000);
-  BK4819_WriteRegister(BK4819_REG_58, 0x0000);
 }
 
 void BK4819_Enable_AfDac_DiscMode_TxDsp(void) {

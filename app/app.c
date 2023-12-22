@@ -517,7 +517,6 @@ void APP_CheckRadioInterrupts(void) {
     BK4819_WriteRegister(BK4819_REG_02, 0);
     Mask = BK4819_ReadRegister(BK4819_REG_02);
     if (Mask & BK4819_REG_02_DTMF_5TONE_FOUND) {
-      gDTMF_RequestPending = true;
       gDTMF_RecvTimeout = 5;
       if (gDTMF_WriteIndex > 15) {
         uint8_t i;

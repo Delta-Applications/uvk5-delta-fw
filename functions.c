@@ -50,8 +50,6 @@ void FUNCTION_Init(void) {
   } else {
     gCurrentCodeType = CODE_TYPE_CONTINUOUS_TONE;
   }
-  gDTMF_RequestPending = false;
-  gDTMF_WriteIndex = 0;
   memset(gDTMF_Received, 0, sizeof(gDTMF_Received));
   g_CxCSS_TAIL_Found = false;
   g_CDCSS_Lost = false;

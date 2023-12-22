@@ -164,9 +164,9 @@ static const char gSubMenu_PONMSG[3][5] = {
 
 static const char gSubMenu_ROGER[4][9] = {
     "OFF",
-    "ROGER",
-    "MDC",
-    "MOTOTRBO",
+    "QNSHNG",
+    "APX600",
+    "TRBO",
 };
 
 static const char gSubMenu_RESET[2][4] = {
@@ -411,14 +411,6 @@ void UI_DisplayMenu(void) {
     break;
 
   case MENU_D_LIST:
-    gIsDtmfContactValid =
-        DTMF_GetContact((uint8_t)gSubMenuSelection - 1, Contact);
-    if (!gIsDtmfContactValid) {
-      // Ghidra being weird again...
-      memcpy(String, "NULL\0\0\0", 8);
-    } else {
-      memcpy(String, Contact, 8);
-    }
     break;
 
   case MENU_PONMSG:
@@ -469,14 +461,6 @@ case MENU_BATTYP:
   if ((gMenuCursor == MENU_R_CTCS || gMenuCursor == MENU_R_DCS) &&
       gCssScanMode != CSS_SCAN_MODE_OFF) {
     UI_PrintString("SCAN", 50, 127, 4, 8, true);
-  }
-
- 
-  if (gMenuCursor == MENU_D_LIST && gIsDtmfContactValid) {
-    Contact[11] = 0;
-    memcpy(&gDTMF_ID, Contact + 8, 4);
-    sprintf(String, "ID:%s", Contact + 8);
-    UI_PrintString(String, 50, 127, 4, 8, true);
   }
 
   if (gMenuCursor == MENU_R_CTCS || gMenuCursor == MENU_T_CTCS ||
