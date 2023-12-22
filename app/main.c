@@ -311,9 +311,9 @@ static void MAIN_Key_STAR(bool bKeyPressed, bool bKeyHeld) {
       return;
     }
     if (gScanState == SCAN_OFF && IS_NOT_NOAA_CHANNEL(gTxVfo->CHANNEL_SAVE)) {
-      InputMode = true;
+      gDTMF_InputMode = true;
       memcpy(gDTMF_InputBox, gDTMF_String, 15);
-      InputIndex = 0;
+      gDTMF_InputIndex = 0;
       gRequestDisplayScreen = DISPLAY_MAIN;
       return;
     }
@@ -399,7 +399,7 @@ void MAIN_ProcessKeys(KEY_Code_t Key, bool bKeyPressed, bool bKeyHeld) {
     return;
   }
 #endif
-  if (InputMode && !bKeyHeld && bKeyPressed) {
+  if (gDTMF_InputMode && !bKeyHeld && bKeyPressed) {
     char Character = DTMF_GetCharacter(Key);
     if (Character != 0xFF) {
       gBeepToPlay = BEEP_1KHZ_60MS_OPTIONAL;

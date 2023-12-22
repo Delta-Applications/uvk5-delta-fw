@@ -134,19 +134,25 @@ void GENERIC_Key_PTT(bool bKeyPressed) {
           return;
         }
         gFlagPrepareTX = true;
-        if (InputMode) {
-          if (InputIndex || gDTMF_PreviousIndex) {
-            if (InputIndex == 0) {
-              InputIndex = gDTMF_PreviousIndex;
+        if (gDTMF_InputMode) {
+          if (gDTMF_InputIndex || gDTMF_PreviousIndex) {
+            if (gDTMF_InputIndex == 0) {
+              gDTMF_InputIndex = gDTMF_PreviousIndex;
             }
-            gDTMF_InputBox[InputIndex] = 0;
-
+            gDTMF_InputBox[gDTMF_InputIndex] = 0;
+            if (gDTMF_InputIndex == 3) {
+              gDTMF_CallMode = DTMF_CheckGroupCall(gDTMF_InputBox, 3);
+            } else {
+              gDTMF_CallMode = DTMF_CALL_MODE_DTMF;
+            }
             sprintf(gDTMF_String, "%s", gDTMF_InputBox);
-            gDTMF_PreviousIndex = InputIndex;
+            gDTMF_PreviousIndex = gDTMF_InputIndex;
+            gDTMF_ReplyState = DTMF_REPLY_ANI;
+            gDTMF_State = DTMF_STATE_0;
           }
           gRequestDisplayScreen = DISPLAY_MAIN;
-          InputMode = false;
-          InputIndex = 0;
+          gDTMF_InputMode = false;
+          gDTMF_InputIndex = 0;
           return;
         }
         gRequestDisplayScreen = DISPLAY_MAIN;
